@@ -1,0 +1,23 @@
+<div class="toaster" role="status" aria-live="polite">
+  @for (toast of toastService.toasts(); track toast.id) {
+    <div class="toast" [class]="'toast--' + toast.tone">
+      @switch (toast.tone) {
+        @case ('success') {
+          <app-icon class="toast__icon" name="check" />
+        }
+        @case ('danger') {
+          <app-icon class="toast__icon" name="alert" />
+        }
+      }
+      <span class="toast__message">{{ toast.message }}</span>
+      <button
+        type="button"
+        class="toast__close"
+        aria-label="Dismiss"
+        (click)="toastService.dismiss(toast.id)"
+      >
+        <app-icon name="x" [size]="14" />
+      </button>
+    </div>
+  }
+</div>

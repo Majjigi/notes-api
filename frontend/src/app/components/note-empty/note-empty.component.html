@@ -1,0 +1,30 @@
+<div class="empty-state">
+  <div class="empty-state__icon">
+    <app-icon name="pen" [size]="24" />
+  </div>
+
+  @if (store.loaded() && store.count() === 0 && !store.search()) {
+    <h2 class="empty-state__title">A blank page awaits</h2>
+    <p class="empty-state__text">Capture your first idea, list or thought. It saves as you type.</p>
+  } @else {
+    <h2 class="empty-state__title">Pick up where you left off</h2>
+    <p class="empty-state__text">Choose a note from the list, or start a fresh one.</p>
+  }
+
+  <div class="empty-state__actions">
+    <button
+      type="button"
+      class="btn btn--primary btn--lg"
+      [disabled]="creating()"
+      (click)="createNote()"
+    >
+      <app-icon name="plus" />
+      New note
+    </button>
+  </div>
+
+  <p class="hint">
+    Press <kbd class="kbd">/</kbd> to search ·
+    <kbd class="kbd">Ctrl</kbd> <kbd class="kbd">S</kbd> to save now
+  </p>
+</div>

@@ -1,0 +1,11 @@
+:host {
+  display: grid;
+  place-items: center;
+  height: 100%;
+}
+
+.hint {
+  margin-top: var(--space-6);
+  color: var(--color-text-subtle);
+  font-size: var(--text-xs);
+}

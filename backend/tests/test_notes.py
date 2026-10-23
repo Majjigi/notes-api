@@ -30,6 +30,34 @@ def test_list_notes(client: TestClient):
     assert sorted(titles) == ["First", "Second"]
 
 
+def test_list_notes_search_matches_title_or_content(client: TestClient):
+    create_note(client, title="Shopping", content="Milk, eggs")
+    create_note(client, title="Ideas", content="An app for MILK lovers")
+    create_note(client, title="Workout", content="Run 5k")
+
+    response = client.get("/api/notes/list", params={"search": "milk"})
+    assert response.status_code == 200
+    titles = [note["title"] for note in response.json()]
+    assert sorted(titles) == ["Ideas", "Shopping"]  # case doesn't matter
+
+
+def test_list_notes_search_treats_wildcards_literally(client: TestClient):
+    create_note(client, title="Discount", content="50% off")
+    create_note(client, title="Plain", content="nothing special")
+
+    response = client.get("/api/notes/list", params={"search": "%"})
+    titles = [note["title"] for note in response.json()]
+    assert titles == ["Discount"]  # "%" is not a match-everything wildcard
+
+
+def test_list_notes_blank_search_returns_everything(client: TestClient):
+    create_note(client, title="First")
+    create_note(client, title="Second")
+
+    response = client.get("/api/notes/list", params={"search": "   "})
+    assert len(response.json()) == 2
+
+
 def test_get_note(client: TestClient):
     created = create_note(client)
 

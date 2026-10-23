@@ -1,0 +1,219 @@
+<div class="page">
+  <header class="page__header">
+    <a class="btn btn--ghost btn--sm" routerLink="/notes">
+      <app-icon name="chevron-left" />
+      Back to notes
+    </a>
+    <button type="button" class="btn btn--secondary btn--sm" (click)="theme.cycle()">
+      <app-icon [name]="theme.icon()" />
+      {{ theme.label() }}
+    </button>
+  </header>
+
+  <section class="hero">
+    <p class="eyebrow">Paper &amp; Ink</p>
+    <h1 class="hero__title">Design system</h1>
+    <p class="hero__lead">
+      Warm paper neutrals, a single indigo ink accent, and an editorial serif for headings. Every
+      screen in the app is built from the tokens and components on this page. Switch the theme to see
+      both modes.
+    </p>
+  </section>
+
+  <!-- Colors -->
+  <section class="section">
+    <h2 class="section__title">Color</h2>
+    <p class="section__text">
+      Components use <strong>semantic</strong> tokens (what a color is for). Each one points at a
+      <strong>palette</strong> color, and dark mode simply points them somewhere else.
+    </p>
+
+    <div class="swatch-grid">
+      @for (color of semanticColors; track color.token) {
+        <div class="swatch">
+          <span class="swatch__chip" [style.background]="'var(' + color.token + ')'"></span>
+          <span class="swatch__name">{{ color.use }}</span>
+          <code class="swatch__token">{{ color.token }}</code>
+        </div>
+      }
+    </div>
+
+    @for (palette of palettes; track palette.name) {
+      <h3 class="subhead">{{ palette.name }}</h3>
+      <div class="ramp">
+        @for (step of palette.steps; track step) {
+          <div class="ramp__step">
+            <span class="ramp__chip" [style.background]="'var(' + palette.prefix + step + ')'"></span>
+            <code>{{ step }}</code>
+          </div>
+        }
+      </div>
+    }
+  </section>
+
+  <!-- Typography -->
+  <section class="section">
+    <h2 class="section__title">Typography</h2>
+    <p class="section__text">
+      <strong>Instrument Serif</strong> for display text, <strong>Inter</strong> for everything you
+      read and click.
+    </p>
+    <div class="card type-list">
+      @for (type of typeScale; track type.token) {
+        <div class="type-row">
+          <code class="type-row__label">{{ type.name }} · {{ type.px }}px</code>
+          <span
+            class="type-row__sample"
+            [class.type-row__sample--display]="type.display"
+            [style.font-size]="'var(' + type.token + ')'"
+          >
+            The quick brown fox jots a note
+          </span>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Buttons -->
+  <section class="section">
+    <h2 class="section__title">Buttons</h2>
+    <div class="card demo">
+      <div class="demo__row">
+        <button type="button" class="btn btn--primary">Primary</button>
+        <button type="button" class="btn btn--secondary">Secondary</button>
+        <button type="button" class="btn btn--ghost">Ghost</button>
+        <button type="button" class="btn btn--danger">Danger</button>
+        <button type="button" class="btn btn--primary" disabled>Disabled</button>
+      </div>
+      <div class="demo__row">
+        <button type="button" class="btn btn--primary btn--sm"><app-icon name="plus" /> Small</button>
+        <button type="button" class="btn btn--primary"><app-icon name="plus" /> Medium</button>
+        <button type="button" class="btn btn--primary btn--lg"><app-icon name="plus" /> Large</button>
+        <button type="button" class="btn btn--secondary btn--icon" aria-label="Search"><app-icon name="search" /></button>
+        <button type="button" class="btn btn--ghost btn--icon" aria-label="Theme"><app-icon name="sun" /></button>
+        <button type="button" class="btn btn--danger-ghost btn--icon" aria-label="Delete"><app-icon name="trash" /></button>
+      </div>
+      <code class="demo__code">&lt;button class="btn btn--primary btn--sm"&gt;</code>
+    </div>
+  </section>
+
+  <!-- Inputs -->
+  <section class="section">
+    <h2 class="section__title">Inputs</h2>
+    <div class="card demo demo--grid">
+      <label class="field">
+        <span class="field__label">Title</span>
+        <input class="input" placeholder="Shopping list" />
+        <span class="field__hint">Up to 200 characters.</span>
+      </label>
+      <label class="field">
+        <span class="field__label">Invalid</span>
+        <input class="input" value="" aria-invalid="true" placeholder="Required" />
+        <span class="field__hint field__hint--error">A title is required.</span>
+      </label>
+      <div class="field">
+        <span class="field__label">Search</span>
+        <div class="input-group">
+          <app-icon class="input-group__icon" name="search" />
+          <input class="input" placeholder="Search notes" aria-label="Search demo" />
+          <span class="input-group__end"><kbd class="kbd">/</kbd></span>
+        </div>
+      </div>
+      <label class="field">
+        <span class="field__label">Content</span>
+        <textarea class="textarea" placeholder="Start writing…"></textarea>
+      </label>
+    </div>
+  </section>
+
+  <!-- Feedback -->
+  <section class="section">
+    <h2 class="section__title">Feedback</h2>
+    <div class="card demo">
+      <div class="demo__row">
+        <span class="badge">Neutral</span>
+        <span class="badge badge--accent">Accent</span>
+        <span class="badge badge--success"><app-icon name="check" [size]="12" [strokeWidth]="2.25" /> Saved</span>
+        <span class="badge badge--warning">Warning</span>
+        <span class="badge badge--danger"><app-icon name="alert" [size]="12" /> Not saved</span>
+        <span class="badge"><app-icon class="spin" name="loader" [size]="12" /> Saving…</span>
+      </div>
+      <div class="demo__row">
+        <kbd class="kbd">Ctrl</kbd><kbd class="kbd">K</kbd>
+        <span class="demo__muted">Keyboard keys</span>
+      </div>
+      <div class="demo__row">
+        <button type="button" class="btn btn--secondary btn--sm" (click)="showToast('neutral')">Toast</button>
+        <button type="button" class="btn btn--secondary btn--sm" (click)="showToast('success')">Success toast</button>
+        <button type="button" class="btn btn--secondary btn--sm" (click)="showToast('danger')">Error toast</button>
+        <button type="button" class="btn btn--secondary btn--sm" (click)="showDialog()">Confirm dialog</button>
+      </div>
+      <div class="skeleton-demo" aria-hidden="true">
+        <span class="skeleton" style="width: 40%"></span>
+        <span class="skeleton" style="width: 85%"></span>
+        <span class="skeleton" style="width: 65%"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Icons -->
+  <section class="section">
+    <h2 class="section__title">Icons</h2>
+    <div class="icon-grid">
+      @for (name of icons; track name) {
+        <div class="icon-grid__item">
+          <app-icon [name]="name" [size]="20" />
+          <code>{{ name }}</code>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Space, shape, depth -->
+  <section class="section">
+    <h2 class="section__title">Space, shape &amp; depth</h2>
+    <div class="token-cols">
+      <div class="card">
+        <h3 class="subhead subhead--flush">Spacing · 4px grid</h3>
+        @for (step of spacing; track step) {
+          <div class="space-row">
+            <code>--space-{{ step }}</code>
+            <span class="space-row__bar" [style.width]="'var(--space-' + step + ')'"></span>
+          </div>
+        }
+      </div>
+      <div class="card">
+        <h3 class="subhead subhead--flush">Radius</h3>
+        <div class="shape-row">
+          @for (radius of radii; track radius) {
+            <div class="shape" [style.border-radius]="'var(--radius-' + radius + ')'">
+              <code>{{ radius }}</code>
+            </div>
+          }
+        </div>
+        <h3 class="subhead">Shadow</h3>
+        <div class="shape-row">
+          @for (shadow of shadows; track shadow) {
+            <div class="shape shape--raised" [style.box-shadow]="'var(--shadow-' + shadow + ')'">
+              <code>{{ shadow }}</code>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="section__title">Empty state</h2>
+    <div class="card">
+      <div class="empty-state">
+        <div class="empty-state__icon"><app-icon name="note" [size]="24" /></div>
+        <h3 class="empty-state__title">Nothing here yet</h3>
+        <p class="empty-state__text">Use an empty state to explain what belongs here and how to add it.</p>
+        <div class="empty-state__actions">
+          <button type="button" class="btn btn--primary"><app-icon name="plus" /> New note</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

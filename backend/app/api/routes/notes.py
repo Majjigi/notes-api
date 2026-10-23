@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, Query, status
-from sqlmodel import Session, col, select
+from sqlmodel import Session, col, or_, select
 
 from app.db import SessionDep
 from app.models.note import Note, NoteCreate, NotePublic, NoteUpdate, utc_now
@@ -28,16 +28,30 @@ def create_note(note_in: NoteCreate, session: SessionDep) -> Note:
     return note
 
 
-# READ (all) — GET /api/notes/list
+# READ (all) — GET /api/notes/list  (optional: ?search=milk)
 @router.get("/list", response_model=list[NotePublic])
 def list_notes(
     session: SessionDep,
     offset: Annotated[int, Query(ge=0)] = 0,
     limit: Annotated[int, Query(ge=1, le=100)] = 100,
+    search: Annotated[str | None, Query(max_length=200)] = None,
 ) -> list[Note]:
+    statement = select(Note)
+
+    # Only filter when the client sent some real text (not just spaces).
+    if search and search.strip():
+        term = search.strip()
+        # icontains = "contains, ignoring upper/lower case".
+        # autoescape=True makes characters like % and _ match literally.
+        statement = statement.where(
+            or_(
+                col(Note.title).icontains(term, autoescape=True),
+                col(Note.content).icontains(term, autoescape=True),
+            )
+        )
+
     statement = (
-        select(Note)
-        .order_by(col(Note.updated_at).desc())  # most recently edited first
+        statement.order_by(col(Note.updated_at).desc())  # most recently edited first
         .offset(offset)
         .limit(limit)
     )

@@ -1,0 +1,30 @@
+@let request = confirm.request();
+<dialog
+  #dialog
+  class="dialog"
+  aria-labelledby="confirm-title"
+  aria-describedby="confirm-message"
+  (close)="confirm.answer(false)"
+  (click)="onDialogClick($event)"
+>
+  <div class="dialog__icon" [class.dialog__icon--danger]="request?.tone === 'danger'">
+    <app-icon name="alert" [size]="20" />
+  </div>
+  <h2 id="confirm-title" class="dialog__title">{{ request?.title }}</h2>
+  <p id="confirm-message" class="dialog__message">{{ request?.message }}</p>
+  <div class="dialog__actions">
+    <!-- Cancel gets focus first, so pressing Enter by accident is harmless. -->
+    <button type="button" class="btn btn--secondary" autofocus (click)="confirm.answer(false)">
+      Cancel
+    </button>
+    <button
+      type="button"
+      class="btn"
+      [class.btn--danger]="request?.tone === 'danger'"
+      [class.btn--primary]="request?.tone !== 'danger'"
+      (click)="confirm.answer(true)"
+    >
+      {{ request?.confirmLabel ?? 'Confirm' }}
+    </button>
+  </div>
+</dialog>

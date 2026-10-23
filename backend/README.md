@@ -67,12 +67,15 @@ uvicorn app.main:app --reload --reload-dir app
 | -------- | --------------------------- | ----------------------------------------------------- | ------------ |
 | `GET`    | `/api/health`               | Check the server is running                           | 200          |
 | `POST`   | `/api/notes/create`         | Create a note (`{"title": "...", "content": "..."}`)  | 201          |
-| `GET`    | `/api/notes/list`           | List notes, newest edit first (`?offset=0&limit=100`) | 200          |
+| `GET`    | `/api/notes/list`           | List notes, newest edit first (`?offset=0&limit=100&search=milk`) | 200 |
 | `GET`    | `/api/notes/get/{id}`       | Get one note                                          | 200          |
 | `PATCH`  | `/api/notes/update/{id}`    | Update title and/or content                           | 200          |
 | `DELETE` | `/api/notes/delete/{id}`    | Delete a note                                         | 204          |
 
 A missing note returns `404`; invalid input (e.g. an empty title) returns `422`.
+
+`search` is optional: it keeps only notes whose title **or** content contains the text, ignoring
+upper/lower case (`?search=milk` matches "Milk, eggs").
 
 ## Run tests
 

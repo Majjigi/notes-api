@@ -1,0 +1,132 @@
+<div class="layout" [class.layout--has-selection]="store.selectedId() !== null">
+  <aside class="sidebar">
+    <header class="sidebar__header">
+      <a class="brand" routerLink="/notes">
+        <span class="brand__mark" aria-hidden="true">n</span>
+        <span class="brand__name">Notes</span>
+      </a>
+
+      <div class="sidebar__actions">
+        <button
+          type="button"
+          class="btn btn--ghost btn--icon btn--sm"
+          [attr.aria-label]="theme.label() + ' (click to change)'"
+          [title]="theme.label()"
+          (click)="theme.cycle()"
+        >
+          <app-icon [name]="theme.icon()" />
+        </button>
+        <button
+          type="button"
+          class="btn btn--primary btn--sm"
+          [disabled]="creating()"
+          (click)="createNote()"
+        >
+          <app-icon name="plus" />
+          New note
+        </button>
+      </div>
+    </header>
+
+    <div class="sidebar__search">
+      <div class="input-group">
+        <app-icon class="input-group__icon" name="search" />
+        <label for="search" class="sr-only">Search notes</label>
+        <input
+          #searchInput
+          id="search"
+          class="input"
+          type="text"
+          placeholder="Search notes"
+          autocomplete="off"
+          [value]="store.search()"
+          (input)="store.setSearch(searchInput.value)"
+          (keydown.escape)="clearSearch()"
+        />
+        <span class="input-group__end">
+          @if (store.search()) {
+            <button
+              type="button"
+              class="btn btn--ghost btn--icon btn--sm search-clear"
+              aria-label="Clear search"
+              (click)="clearSearch()"
+            >
+              <app-icon name="x" [size]="14" />
+            </button>
+          } @else {
+            <kbd class="kbd" title="Press / to search">/</kbd>
+          }
+        </span>
+      </div>
+    </div>
+
+    <div class="sidebar__meta">
+      @if (store.loaded()) {
+        <span>{{ countLabel() }}</span>
+      }
+      @if (store.loading() && store.loaded()) {
+        <app-icon class="spin" name="loader" [size]="12" />
+      }
+    </div>
+
+    <nav class="note-list" aria-label="Notes">
+      @if (store.error(); as error) {
+        <div class="list-alert" role="alert">
+          <app-icon class="list-alert__icon" name="alert" [size]="18" />
+          <p class="list-alert__title">Couldn't load notes</p>
+          <p class="list-alert__text">{{ error }}</p>
+          <button type="button" class="btn btn--secondary btn--sm" (click)="store.load()">
+            <app-icon name="refresh" [size]="14" />
+            Try again
+          </button>
+        </div>
+      } @else if (!store.loaded()) {
+        @for (row of skeletonRows; track row) {
+          <div class="note-item note-item--skeleton" aria-hidden="true">
+            <span class="skeleton" style="width: 55%"></span>
+            <span class="skeleton" style="width: 90%"></span>
+          </div>
+        }
+      } @else {
+        @for (note of store.notes(); track note.id) {
+          <a
+            class="note-item"
+            routerLinkActive="note-item--active"
+            ariaCurrentWhenActive="page"
+            [routerLink]="['/notes', note.id]"
+          >
+            <span class="note-item__row">
+              <span class="note-item__title">{{ note.title }}</span>
+              <time class="note-item__time" [attr.datetime]="note.updated_at">
+                {{ note.updated_at | relativeTime: clock.now() }}
+              </time>
+            </span>
+            <span class="note-item__preview">{{ preview(note.content) }}</span>
+          </a>
+        } @empty {
+          <div class="list-empty">
+            @if (store.search()) {
+              <p>No notes match <strong>“{{ store.search() }}”</strong></p>
+              <button type="button" class="btn btn--ghost btn--sm" (click)="clearSearch()">
+                Clear search
+              </button>
+            } @else {
+              <p>No notes yet.</p>
+            }
+          </div>
+        }
+      }
+    </nav>
+
+    <footer class="sidebar__footer">
+      <a class="btn btn--ghost btn--sm" routerLink="/design-system">
+        <app-icon name="layout" />
+        Design system
+      </a>
+    </footer>
+  </aside>
+
+  <main class="main">
+    <router-outlet />
+  </main>
+</div>

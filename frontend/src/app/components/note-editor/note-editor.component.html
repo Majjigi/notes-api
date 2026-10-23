@@ -1,0 +1,102 @@
+@if (loadError(); as error) {
+  <div class="editor-message">
+    <div class="empty-state">
+      <div class="empty-state__icon empty-state__icon--danger">
+        <app-icon name="alert" [size]="24" />
+      </div>
+      <h2 class="empty-state__title">Couldn't open this note</h2>
+      <p class="empty-state__text">{{ error }}</p>
+      <div class="empty-state__actions">
+        <a class="btn btn--secondary" routerLink="/notes">
+          <app-icon name="chevron-left" />
+          Back to notes
+        </a>
+      </div>
+    </div>
+  </div>
+} @else if (note(); as current) {
+  <div class="editor">
+    <header class="editor__toolbar">
+      <a class="btn btn--ghost btn--sm editor__back" routerLink="/notes">
+        <app-icon name="chevron-left" />
+        Notes
+      </a>
+
+      <div class="editor__status" aria-live="polite">
+        @switch (status()) {
+          @case ('saving') {
+            <span class="badge">
+              <app-icon class="spin" name="loader" [size]="12" />
+              Saving…
+            </span>
+          }
+          @case ('saved') {
+            <span class="badge badge--success">
+              <app-icon name="check" [size]="12" [strokeWidth]="2.25" />
+              Saved
+            </span>
+          }
+          @case ('error') {
+            <button type="button" class="badge badge--danger editor__retry" (click)="save()">
+              <app-icon name="alert" [size]="12" />
+              Not saved · Retry
+            </button>
+          }
+        }
+      </div>
+
+      <button
+        type="button"
+        class="btn btn--danger-ghost btn--icon btn--sm"
+        aria-label="Delete note"
+        title="Delete note"
+        (click)="deleteNote()"
+      >
+        <app-icon name="trash" />
+      </button>
+    </header>
+
+    <div class="editor__scroll">
+      <article class="editor__page">
+        <label for="note-title" class="sr-only">Title</label>
+        <input
+          #titleInput
+          id="note-title"
+          class="editor__title"
+          placeholder="Untitled"
+          maxlength="200"
+          autocomplete="off"
+          [value]="title()"
+          (input)="onTitleInput(titleInput.value)"
+          (keydown.enter)="$event.preventDefault(); contentInput.focus()"
+        />
+
+        <p class="editor__meta">
+          <span>Edited {{ current.updated_at | relativeTime: clock.now() }}</span>
+          <span class="editor__dot" aria-hidden="true"></span>
+          <span>{{ wordCount() }} {{ wordCount() === 1 ? 'word' : 'words' }}</span>
+          <span class="editor__dot" aria-hidden="true"></span>
+          <span>Created {{ current.created_at | date: 'MMM d, y' }}</span>
+        </p>
+
+        <label for="note-content" class="sr-only">Content</label>
+        <textarea
+          #contentInput
+          id="note-content"
+          class="editor__content"
+          placeholder="Start writing…"
+          [value]="content()"
+          (input)="onContentInput(contentInput.value)"
+        ></textarea>
+      </article>
+    </div>
+  </div>
+} @else {
+  <div class="editor__page editor__page--loading" aria-busy="true" aria-label="Loading note">
+    <span class="skeleton" style="width: 50%; height: 2.25rem"></span>
+    <span class="skeleton" style="width: 30%"></span>
+    <span class="skeleton" style="width: 100%; margin-top: 1.5rem"></span>
+    <span class="skeleton" style="width: 92%"></span>
+    <span class="skeleton" style="width: 70%"></span>
+  </div>
+}
